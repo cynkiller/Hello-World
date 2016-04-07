@@ -1,5 +1,17 @@
-FROM docker/whalesay:latest
-EXPOSE 80
-RUN apt-get -y update && apt-get install -y fortunes
-CMD /usr/games/fortune -a | cowsay
+# Using a compact OS
+FROM alpine:latest
 
+MAINTAINER cynkiller <cyn604@126.com> 
+
+# Install Nginx
+RUN apk --update add nginx
+
+# Add 2048 stuff into Nginx server
+COPY . /usr/share/nginx/html
+
+EXPOSE 80
+RUN ln -sf /dev/stdout /var/log/nginx/access.log \
+	&& ln -sf /dev/stderr /var/log/nginx/error.log
+
+# Start Nginx and keep it from running background
+CMD ["nginx", "-g", "daemon off;"]
